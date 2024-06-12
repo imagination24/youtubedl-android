@@ -3,7 +3,6 @@ package com.yausername.youtubedl_android
 import android.content.Context
 import android.os.Build
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.yausername.youtubedl_android.YoutubeDLException
 import com.yausername.youtubedl_android.mapper.VideoInfo
 import com.yausername.youtubedl_common.SharedPrefsHelper
 import com.yausername.youtubedl_common.SharedPrefsHelper.update
@@ -23,6 +22,7 @@ object YoutubeDL {
     private var ENV_LD_LIBRARY_PATH: String? = null
     private var ENV_SSL_CERT_FILE: String? = null
     private var ENV_PYTHONHOME: String? = null
+    private var TMPDIR: String = ""
     private val idProcessMap = Collections.synchronizedMap(HashMap<String, Process>())
 
     @Synchronized
@@ -45,6 +45,7 @@ object YoutubeDL {
                 aria2cDir.absolutePath + "/usr/lib"
         ENV_SSL_CERT_FILE = pythonDir.absolutePath + "/usr/etc/tls/cert.pem"
         ENV_PYTHONHOME = pythonDir.absolutePath + "/usr"
+        TMPDIR = appContext.cacheDir.absolutePath
         initPython(appContext, pythonDir)
         init_ytdlp(appContext, ytdlpDir)
         initialized = true
@@ -169,6 +170,7 @@ object YoutubeDL {
             this["PATH"] = System.getenv("PATH") + ":" + binDir!!.absolutePath
             this["PYTHONHOME"] = ENV_PYTHONHOME
             this["HOME"] = ENV_PYTHONHOME
+            this["TMPDIR"] = TMPDIR
         }
 
         process = try {
